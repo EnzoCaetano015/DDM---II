@@ -1,0 +1,58 @@
+@font-face {
+    font-family: 'Nunito Sans';
+    font-display: optional;
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://s1.trrsf.com/fe/zaz-ui-t360/_fonts/nunito-sans-v6-latin-regular.woff) format("woff"), url(https://s1.trrsf.com/fe/zaz-ui-t360/_fonts/nunito-sans-v6-latin-regular.ttf) format("truetype")
+}
+
+@font-face {
+    font-family: 'Nunito Sans';
+    font-display: optional;
+    font-style: normal;
+    font-weight: 700;
+    src: url(https://s1.trrsf.com/fe/zaz-ui-t360/_fonts/nunito-sans-v6-latin-700.woff) format("woff"), url(https://s1.trrsf.com/fe/zaz-ui-t360/_fonts/nunito-sans-v6-latin-700.ttf) format("truetype")
+}
+
+@font-face {
+    font-family: 'Nunito Sans';
+    font-display: optional;
+    font-style: normal;
+    font-weight: 900;
+    src: url(https://s1.trrsf.com/fe/zaz-ui-t360/_fonts/nunito-sans-v8-latin-900.woff) format("woff"), url(https://s1.trrsf.com/fe/zaz-ui-t360/_fonts/nunito-sans-v8-latin-900.ttf) format("truetype")
+}
+
+@font-face {
+    font-family: Lora;
+    font-display: optional;
+    font-style: normal;
+    font-weight: 700;
+    src: url(https://s1.trrsf.com/fe/zaz-ui-t360/_fonts/lora-v20-latin-700.woff) format("woff"), url(https://s1.trrsf.com/fe/zaz-ui-t360/_fonts/lora-v20-latin-700.ttf) format("truetype")
+}
+
+@font-face {
+    font-family: 'fallback sans-serif';
+    src: local("Arial");
+    ascent-override: 101%;
+    descent-override: 35%;
+    line-gap-override: 0
+}
+
+@font-face {
+    font-family: 'fallback serif';
+    src: local("Times New Roman");
+    ascent-override: 100%;
+    descent-override: 27%;
+    line-gap-override: 0
+}
+
+:root {
+    --font-default-sans-serif: 'Nunito Sans', 'fallback sans-serif';
+    --font-default-serif: 'Lora', 'fallback serif'
+}
+
+body,
+html {
+    font-family: var(--font-default-sans-serif);
+    background-color: var(--body-background-color)
+}
