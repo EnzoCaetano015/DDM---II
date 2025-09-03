@@ -31,6 +31,8 @@ class _MyPokedexState extends State<MyPokedex> {
   final TextEditingController _controller = TextEditingController();
   bool _loading = false;
   Map<String, dynamic>? _pokemon;
+  bool _isShiny = false;
+  bool _isFront = true;
 
   @override
   void dispose() {
@@ -48,6 +50,8 @@ class _MyPokedexState extends State<MyPokedex> {
     setState(() {
       _loading = true;
       _pokemon = null;
+      _isShiny = false;
+      _isFront = true;
     });
 
     final url = Uri.parse('https://pokeapi.co/api/v2/pokemon/$input');
@@ -79,14 +83,7 @@ class _MyPokedexState extends State<MyPokedex> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.redAccent,
-      appBar: AppBar(
-        backgroundColor: Colors.blueAccent,
-        title: const Text(
-          'Pokédex',
-          style: TextStyle(color: Colors.white),
-          textAlign: TextAlign.center,
-        ),
-      ),
+  
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -138,7 +135,49 @@ class _MyPokedexState extends State<MyPokedex> {
                 ],
               ),
               const SizedBox(height: 16),
-              if (_pokemon != null) _PokemonCard(data: _pokemon!)
+              if (_pokemon != null)
+                _PokemonCard(
+                  data: _pokemon!,
+                  isShiny: _isShiny,
+                  isFront: _isFront,
+                ),
+              const SizedBox(
+                height: 16,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (_pokemon != null)
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() => _isShiny = !_isShiny);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _isShiny ? Colors.yellow : Colors.black),
+                      child: Text(
+                        _isShiny ? "Versão original" : "Shiny version",
+                        style: TextStyle(
+                            color: _isShiny ? Colors.black : Colors.yellow),
+                      ),
+                    ),
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  if (_pokemon != null)
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() => _isFront = !_isFront);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green),
+                      child: Text(
+                        _isFront ? "Frente" : "Costas",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                ],
+              )
             ],
           ),
         ],
@@ -149,14 +188,44 @@ class _MyPokedexState extends State<MyPokedex> {
 
 class _PokemonCard extends StatelessWidget {
   final Map<String, dynamic> data;
-  const _PokemonCard({required this.data});
+  final bool isShiny;
+  final bool isFront;
+  const _PokemonCard({
+    required this.data,
+    required this.isShiny,
+    required this.isFront,
+  });
+
+  String? _pickSprite(Map<String, dynamic> sprites,
+      {required bool front, required bool shiny}) {
+    final keysInOrder = <String>[
+      if (front && shiny) 'front_shiny',
+      if (front && !shiny) 'front_default',
+      if (!front && shiny) 'back_shiny',
+      if (!front && !shiny) 'back_default',
+      if (!front && shiny) 'front_shiny',
+      if (!front && !shiny) 'front_default',
+      if (front && shiny) 'back_shiny',
+      if (front && !shiny) 'back_default',
+    ];
+
+    for (final k in keysInOrder) {
+      final v = sprites[k];
+      if (v is String && v.isNotEmpty) return v;
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     final name = (data['name'] as String?)?.toUpperCase() ?? 'DESCONHECIDO';
     final id = data['id']?.toString() ?? '-';
     final sprites = data['sprites'] as Map<String, dynamic>?;
-    final img = sprites?['front_default'] as String?;
+
+    final String? img = sprites == null
+        ? null
+        : _pickSprite(sprites, front: isFront, shiny: isShiny);
+
     final types = (data['types'] as List?)
             ?.map((t) => t['type']?['name'])
             .whereType<String>()
@@ -185,9 +254,13 @@ class _PokemonCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('$name  #$id',
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(
+                      '$name  #$id',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     Text('Tipos: ${types.join(', ').toUpperCase()}'),
                   ],
